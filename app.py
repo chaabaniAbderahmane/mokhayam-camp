@@ -476,14 +476,15 @@ def page_participants(session, admin):
             {badge(L(p.payment_status), pay_kind[p.payment_status])}
             </div>
             """, unsafe_allow_html=True)
-            b1, b2, b3, b4 = st.columns(4)
-            if b1.button(f"✏️ {L('edit')}", key=f"edit_{p.id}"):
+            b1, b2 = st.columns(2)
+            if b1.button(f"✏️ {L('edit')}", key=f"edit_{p.id}", use_container_width=True):
                 st.session_state[f"editing_{p.id}"] = True
-            if b2.button(f"🗑️ {L('delete')}", key=f"del_{p.id}"):
+            if b2.button(f"🗑️ {L('delete')}", key=f"del_{p.id}", use_container_width=True):
                 st.session_state[f"confirm_del_{p.id}"] = True
-            if b3.button(f"📇 QR", key=f"qr_{p.id}"):
+            b3, b4 = st.columns(2)
+            if b3.button(f"📇 QR", key=f"qr_{p.id}", use_container_width=True):
                 st.session_state[f"showqr_{p.id}"] = True
-            if b4.button(f"✅", key=f"att_quick_{p.id}", help=L("mark_attendance")):
+            if b4.button(f"✅ {L('mark_attendance')}", key=f"att_quick_{p.id}", use_container_width=True):
                 st.session_state["quick_att_id"] = p.id
                 st.session_state["nav"] = "attendance"
                 st.rerun()
