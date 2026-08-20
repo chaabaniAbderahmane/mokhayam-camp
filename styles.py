@@ -19,9 +19,22 @@ def inject_css(lang: str):
     st.markdown(f"""
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&family=Cairo:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
-        html, body, [class*="css"] {{
+        /* Only set direction on the actual document flow + main content text,
+           NEVER on Streamlit's internal structural/transform-driven wrappers
+           (that previously broke the sidebar collapse animation). */
+        html, body {{
             direction: {direction};
+        }}
+        [data-testid="stAppViewContainer"] {{
+            direction: {direction};
+        }}
+        .block-container, .block-container * {{
+            direction: {direction};
+        }}
+        [data-testid="stMarkdownContainer"] {{
             text-align: {align};
+        }}
+        body, p, li, label, span, div, h1, h2, h3, h4, input, textarea {{
             font-family: {font} !important;
         }}
         .stApp {{
@@ -40,21 +53,30 @@ def inject_css(lang: str):
             max-width: 700px;
         }}
 
-        /* ---------- Force columns to stack on narrow phone screens ---------- */
+        /* ---------- Force columns to stack on narrow phone screens ----------
+           Scoped ONLY to the main content area - never to the sidebar - so we
+           don't break Streamlit's own sidebar collapse/resize mechanism. */
         @media (max-width: 700px) {{
-            [data-testid="stHorizontalBlock"] {{
+            .block-container [data-testid="stHorizontalBlock"] {{
                 flex-direction: column !important;
             }}
-            [data-testid="stHorizontalBlock"] > div {{
+            .block-container [data-testid="stHorizontalBlock"] > div {{
                 width: 100% !important;
                 flex: 1 1 100% !important;
                 min-width: 100% !important;
             }}
         }}
 
-        /* ---------- Sidebar ---------- */
+        /* ---------- Sidebar ----------
+           IMPORTANT: no `direction` property is set on the sidebar shell or its
+           structural wrappers - only text-align on the inner content, so the
+           collapse/expand animation keeps working correctly. */
         [data-testid="stSidebar"] {{
             background: {BLACK};
+            direction: ltr !important;
+        }}
+        [data-testid="stSidebarUserContent"] {{
+            text-align: {align};
         }}
         [data-testid="stSidebar"] * {{
             color: {WHITE} !important;
